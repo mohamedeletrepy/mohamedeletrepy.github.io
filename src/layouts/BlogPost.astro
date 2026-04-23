@@ -1,0 +1,378 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, author, readingTime, coverImage, coverAlt } = post.data;
+
+const formattedDate = new Date(pubDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+const formattedUpdated = updatedDate
+  ? new Date(updatedDate).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
+  : null;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage}>
+
+  <!-- Floating toolbar -->
+  <div class="reading-toolbar">
+    <div class="reading-toolbar__inner">
+      <span class="reading-toolbar__label">View</span>
+      <div class="toolbar-group">
+        <button class="toolbar-btn layout-btn" data-width="comfortable" title="Comfortable width">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="9" y1="3" x2="9" y2="21" opacity=".4"/>
+            <line x1="15" y1="3" x2="15" y2="21" opacity=".4"/>
+          </svg>
+        </button>
+        <button class="toolbar-btn layout-btn" data-width="wide" title="Full width">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+          </svg>
+        </button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="theme-toggle" title="Light / Dark">
+          <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cover image -->
+  {coverImage && (
+    <div class="post-cover">
+      <img src={coverImage} alt={coverAlt ?? title} loading="eager" decoding="async" />
+      <div class="post-cover__overlay"></div>
+    </div>
+  )}
+
+  <!-- Post container — JS adds .is-wide here -->
+  <div id="post-container" class="post-container-default">
+    <div id="post-layout" class="post-layout-inner">
+      <article class="post-content">
+        <header class="post-header" style={coverImage ? 'margin-top:-3rem;position:relative;z-index:2' : ''}>
+          <div class="post-header__tags">
+            {tags.map(tag => (
+              <a href={`/tags/${tag.toLowerCase().replace(/\s+/g,'-')}`} class="tag">{tag}</a>
+            ))}
+          </div>
+          <h1 class="post-header__title">{title}</h1>
+          <div class="post-header__meta">
+            <span class="post-header__meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>{formattedDate}
+            </span>
+            {readingTime && (
+              <span class="post-header__meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>{readingTime} min read
+              </span>
+            )}
+            <span class="post-header__meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>{author}
+            </span>
+            {formattedUpdated && (
+              <span class="post-header__meta-item" style="color:var(--accent-purple)">
+                Updated {formattedUpdated}
+              </span>
+            )}
+          </div>
+        </header>
+
+        <div class="prose" id="prose-content">
+          <slot />
+        </div>
+
+        <footer class="post-footer">
+          <div class="post-footer__tags">
+            <span class="post-footer__label">Tagged:</span>
+            {tags.map(tag => (
+              <a href={`/tags/${tag.toLowerCase().replace(/\s+/g,'-')}`} class="tag">{tag}</a>
+            ))}
+          </div>
+          <a href="/blog" class="btn btn--outline" style="margin-top:2rem;display:inline-flex">← Back to Blog</a>
+        </footer>
+      </article>
+
+      <aside id="post-aside"><TableOfContents /></aside>
+    </div>
+  </div>
+
+</BaseLayout>
+
+<style>
+/* ── Toolbar ── */
+.reading-toolbar {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 200;
+}
+.reading-toolbar__inner {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
+  border-radius: 40px;
+  padding: .4rem .9rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  backdrop-filter: blur(16px);
+}
+.reading-toolbar__label {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  color: var(--text-dim);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.toolbar-group { display: flex; align-items: center; gap: .25rem; }
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .2s;
+}
+.toolbar-btn:hover {
+  color: var(--accent-green);
+  background: rgba(0,229,255,.08);
+  border-color: rgba(0,229,255,.2);
+}
+.toolbar-btn.active {
+  color: var(--accent-green);
+  background: rgba(0,229,255,.12);
+  border-color: rgba(0,229,255,.3);
+}
+.toolbar-divider { width:1px; height:20px; background:var(--border); margin:0 .15rem; }
+
+/* ── Cover ── */
+.post-cover {
+  width: 100%;
+  height: 420px;
+  position: relative;
+  overflow: hidden;
+  margin-top: var(--nav-height);
+}
+.post-cover img { width:100%; height:100%; object-fit:cover; }
+.post-cover__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, var(--bg-base) 100%);
+}
+
+/* ── Default (comfortable) layout ── */
+.post-container-default {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  transition: max-width 0.3s ease, padding 0.3s ease;
+}
+
+/* ── Wide layout (JS adds .is-wide to #post-container) ── */
+#post-container.is-wide {
+  max-width: 100% !important;
+  padding: 3rem 3rem 5rem !important;
+}
+
+/* ── Inner grid ── */
+.post-layout-inner {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* ── Prose + footer ── */
+.post-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.post-footer__label {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-right: .5rem;
+}
+.post-footer__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  .reading-toolbar { bottom: 1rem; right: 1rem; }
+  .reading-toolbar__label { display: none; }
+  .post-cover { height: 240px; }
+  .post-layout-inner { grid-template-columns: 1fr; }
+  #post-aside { display: none; }
+  .post-container-default { padding: 2rem 1rem 4rem; }
+  #post-container.is-wide { padding: 2rem 1rem 4rem !important; }
+}
+</style>
+
+<script>
+// ══ Width toggle ═══════════════════════════════════════════════════════════
+const container  = document.getElementById('post-container');
+const layoutBtns = document.querySelectorAll<HTMLElement>('.layout-btn');
+
+function applyWidth(w: string) {
+  if (!container) return;
+  if (w === 'wide') {
+    container.classList.add('is-wide');
+  } else {
+    container.classList.remove('is-wide');
+  }
+  localStorage.setItem('blog-width', w);
+  layoutBtns.forEach(b => {
+    b.classList.toggle('active', b.dataset.width === w);
+  });
+}
+
+// Init from saved preference
+applyWidth(localStorage.getItem('blog-width') ?? 'comfortable');
+
+// Button clicks
+layoutBtns.forEach(btn => {
+  btn.addEventListener('click', () => applyWidth(btn.dataset.width ?? 'comfortable'));
+});
+
+// ══ Theme toggle ════════════════════════════════════════════════════════════
+const themeBtn = document.getElementById('theme-toggle');
+const sunIcon  = themeBtn?.querySelector<HTMLElement>('.icon-sun');
+const moonIcon = themeBtn?.querySelector<HTMLElement>('.icon-moon');
+
+function applyTheme(t: string) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('blog-theme', t);
+  if (sunIcon && moonIcon) {
+    sunIcon.style.display  = t === 'dark'  ? '' : 'none';
+    moonIcon.style.display = t === 'light' ? '' : 'none';
+  }
+}
+
+applyTheme(localStorage.getItem('blog-theme') ?? 'dark');
+themeBtn?.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ══ Copy to clipboard ═══════════════════════════════════════════════════════
+document.querySelectorAll('pre').forEach(pre => {
+  if (pre.querySelector('code.language-mermaid')) return;
+
+  const codeEl  = pre.querySelector('code');
+  const rawLang = codeEl?.className.match(/language-(\w+)/)?.[1] ?? '';
+  const lang    = rawLang.toLowerCase();
+  const isPS    = ['powershell','ps1','ps'].includes(lang);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'code-block' + (isPS ? ' code-block--powershell' : '');
+
+  const header = document.createElement('div');
+  header.className = 'code-block__header';
+
+  const badge = isPS
+    ? `<span class="code-block__lang ps-lang">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="margin-right:.3rem;opacity:.8">
+          <path d="M9.29 4L2 20h3.5l1.44-3.5h5.2L13.58 20H17L9.71 4H9.29zm-.4 9.5l1.61-4.3 1.61 4.3H8.89z"/>
+        </svg>powershell</span>`
+    : `<span class="code-block__lang" data-lang="${lang}">${lang || 'code'}</span>`;
+
+  header.innerHTML = `${badge}
+    <button class="copy-btn" aria-label="Copy">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg> copy
+    </button>`;
+
+  if (isPS) pre.classList.add('ps-terminal');
+  pre.parentNode?.insertBefore(wrapper, pre);
+  wrapper.appendChild(header);
+  wrapper.appendChild(pre);
+
+  header.querySelector('.copy-btn')!.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(pre.textContent ?? '');
+    const btn = header.querySelector('.copy-btn') as HTMLElement;
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> copied!`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> copy`;
+    }, 2000);
+  });
+});
+
+// ══ Mermaid ═════════════════════════════════════════════════════════════════
+(async () => {
+  const blocks = document.querySelectorAll('pre code.language-mermaid, .astro-code.language-mermaid');
+  if (!blocks.length) return;
+  const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')).default;
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  mermaid.initialize({
+    startOnLoad: false, theme: dark ? 'dark' : 'default', securityLevel: 'loose',
+    themeVariables: {
+      darkMode: dark, background: dark ? '#0d1117' : '#fff',
+      primaryColor: '#00e5ff', primaryTextColor: dark ? '#e8f4f8' : '#0f172a',
+      lineColor: dark ? '#2a4060' : '#cbd5e1',
+    }
+  });
+  for (const block of blocks) {
+    const code = block.textContent ?? '';
+    const pre  = block.closest('pre') ?? block;
+    const wrap = (pre as HTMLElement).closest('.code-block') ?? pre;
+    const div  = document.createElement('div');
+    div.className = 'mermaid-wrapper';
+    const inner = document.createElement('div');
+    inner.className = 'mermaid';
+    inner.textContent = code;
+    div.appendChild(inner);
+    wrap.parentNode?.replaceChild(div, wrap);
+  }
+  await mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+})();
+
+// ══ TOC scroll spy ══════════════════════════════════════════════════════════
+const headings = document.querySelectorAll('.prose h2, .prose h3');
+const tocLinks  = document.querySelectorAll('.toc__link');
+const obs = new IntersectionObserver(
+  entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector(`.toc__link[href="#${e.target.id}"]`)?.classList.add('active');
+      }
+    });
+  },
+  { rootMargin: '-80px 0px -70% 0px' }
+);
+headings.forEach(h => obs.observe(h));
+</script>

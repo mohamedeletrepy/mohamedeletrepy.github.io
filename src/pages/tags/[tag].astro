@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+  const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+
+  return allTags.map(tag => {
+    const slug = tag.toLowerCase().replace(/\s+/g, '-');
+    const filteredPosts = allPosts
+      .filter(p => p.data.tags.includes(tag))
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+    return {
+      params: { tag: slug },
+      props: { tag, posts: filteredPosts },
+    };
+  });
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`Tag: ${tag}`}
+  description={`All posts tagged with "${tag}" on Ahmed Eletreby's cybersecurity blog.`}
+>
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header__label">// tag filter</div>
+      <h1 class="page-header__title">
+        <span style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.6em; font-weight: 500; display: block; margin-bottom: 0.25rem;">#</span>
+        {tag}
+      </h1>
+      <p class="page-header__desc">{posts.length} post{posts.length !== 1 ? 's' : ''} tagged with this topic.</p>
+    </div>
+
+    <div class="posts-grid" style="margin-bottom: 5rem;">
+      {posts.map(post => (
+        <PostCard post={post} />
+      ))}
+    </div>
+
+    <div style="text-align: center; margin-bottom: 4rem;">
+      <a href="/tags" class="btn btn--outline">← All Tags</a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Not Found">
+  <div class="container" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div style="text-align: center; padding: 4rem 0;">
+      <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-green); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem;">
+        // error 404
+      </div>
+
+      <div class="terminal" style="max-width: 500px; margin: 0 auto 2.5rem; text-align: left;">
+        <div class="terminal__header">
+          <div class="terminal__dot terminal__dot--red"></div>
+          <div class="terminal__dot terminal__dot--yellow"></div>
+          <div class="terminal__dot terminal__dot--green"></div>
+          <span class="terminal__title">bash</span>
+        </div>
+        <div class="terminal__body">
+          <div class="terminal__line">
+            <span class="terminal__prompt">└─$&nbsp;</span>
+            <span class="terminal__cmd">curl {Astro.url.pathname}</span>
+          </div>
+          <div class="terminal__line" style="padding-left:0">
+            <span style="color: var(--accent-red);">curl: (6) Could not resolve host</span>
+          </div>
+          <div class="terminal__line" style="padding-left:0">
+            <span class="terminal__output">HTTP 404 — Page not found</span>
+          </div>
+          <div class="terminal__line">
+            <span class="terminal__prompt">└─$&nbsp;</span>
+            <span class="terminal__cursor"></span>
+          </div>
+        </div>
+      </div>
+
+      <h1 style="font-size: 5rem; font-weight: 800; color: var(--accent-green); line-height: 1; margin-bottom: 0.5rem; font-family: var(--font-mono);">404</h1>
+      <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">This page doesn't exist or was moved.</p>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="btn btn--primary">← Go Home</a>
+        <a href="/blog" class="btn btn--outline">Browse Blog</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

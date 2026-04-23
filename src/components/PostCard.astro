@@ -1,0 +1,76 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, tags, readingTime, coverImage, coverAlt } = post.data;
+
+const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
+  year: 'numeric', month: 'short', day: 'numeric'
+});
+---
+
+<a href={`/blog/${post.slug}`} class="post-card">
+  {coverImage && (
+    <div class="post-card__cover">
+      <img
+        src={coverImage}
+        alt={coverAlt ?? title}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  )}
+
+  <div class="post-card__body">
+    <div class="post-card__meta">
+      <time class="post-card__date" datetime={pubDate.toISOString()}>
+        {formattedDate}
+      </time>
+      {readingTime && (
+        <span class="post-card__reading-time">{readingTime} min read</span>
+      )}
+    </div>
+
+    <h2 class="post-card__title">{title}</h2>
+    <p class="post-card__desc">{description}</p>
+
+    <div class="post-card__tags">
+      {tags.slice(0, 3).map(tag => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
+  </div>
+</a>
+
+<style>
+.post-card__cover {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+  margin: -1.75rem -1.75rem 1rem -1.75rem;
+  width: calc(100% + 3.5rem);
+}
+
+.post-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.post-card:hover .post-card__cover img {
+  transform: scale(1.04);
+}
+
+.post-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+</style>

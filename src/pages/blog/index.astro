@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const allTags = [...new Set(posts.flatMap(p => p.data.tags))].sort();
+---
+
+<BaseLayout
+  title="Blog"
+  description="Cybersecurity research, red team techniques, adversary simulation, and offensive security deep-dives by Mohamed Eletrepy."
+>
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header__label">// Research & Writeups</div>
+      <h1 class="page-header__title">The Blog</h1>
+      <p class="page-header__desc">
+        Offensive security research, HTB/VulnLab writeups, and practical red team techniques.
+        <span style="color:var(--accent-green);font-family:var(--font-mono)">{posts.length}</span> posts published.
+      </p>
+    </div>
+
+    <!-- Tag filter -->
+    <div style="margin-bottom:2.5rem">
+      <div class="filter-label">Filter by tag</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <a href="/blog" class="tag tag--active" style="font-size:0.75rem">All</a>
+        {allTags.map(tag => (
+          <a href={`/tags/${tag.toLowerCase().replace(/\s+/g,'-')}`} class="tag" style="font-size:0.75rem">{tag}</a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Posts grid with covers -->
+    <div class="posts-grid" style="margin-bottom:5rem">
+      {posts.map(post => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tag--active {
+  background: rgba(0,229,255,0.15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+</style>

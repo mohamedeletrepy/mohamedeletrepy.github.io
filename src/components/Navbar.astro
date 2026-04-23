@@ -1,0 +1,49 @@
+---
+const navLinks = [
+  { href: '/', label: 'home' },
+  { href: '/blog', label: 'blog' },
+  { href: '/about', label: 'about' },
+];
+---
+
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar__inner">
+    <a href="/" class="navbar__logo" aria-label="Mohamed Eletrepy - Home">
+      <span class="prompt">~/</span>maverick
+    </a>
+
+    <ul class="navbar__nav">
+      {navLinks.map(link => (
+        <li><a href={link.href}>{link.label}</a></li>
+      ))}
+    </ul>
+
+    <div class="navbar__actions">
+      <button class="search-btn" id="search-trigger" aria-label="Search posts">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>search</span>
+        <kbd style="font-size:0.65rem; background: rgba(255,255,255,0.07); padding: 0.1rem 0.3rem; border-radius:3px; color: var(--text-dim)">⌘K</kbd>
+      </button>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+  {navLinks.map(link => (
+    <a href={link.href}>{link.label}</a>
+  ))}
+</div>
+
+<script>
+  document.getElementById('search-trigger')?.addEventListener('click', () => {
+    document.getElementById('search-overlay')?.classList.add('open');
+    setTimeout(() => (document.getElementById('search-input') as HTMLInputElement)?.focus(), 50);
+  });
+</script>

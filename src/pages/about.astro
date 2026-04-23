@@ -1,0 +1,397 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Dynamic CV: pick any PDF file dropped in /public/cv/
+const cvFiles = import.meta.glob('/public/cv/*.pdf', { eager: true, query: '?url', import: 'default' });
+const cvPath = Object.keys(cvFiles)[0]?.replace('/public', '') ?? null;
+const cvFilename = cvPath ? cvPath.split('/').pop() : null;
+
+// Dynamic profile image: pick any favicon.* in /public/
+const avatarFiles = import.meta.glob('/public/favicon.*', { eager: true, query: '?url', import: 'default' });
+const avatarPath = Object.keys(avatarFiles)[0]?.replace('/public', '') ?? null;
+---
+
+<BaseLayout
+  title="About"
+  description="Mohamed Eletrepy (maverick) — Security Researcher specializing in Red Teaming, Adversary Simulation, Active Directory, and Windows internals."
+>
+  <div class="container">
+    <div class="about-layout">
+
+      <!-- Main content -->
+      <div class="about-content">
+        <div class="page-header" style="padding-top: calc(var(--nav-height) + 3rem); border-bottom: 1px solid var(--border); margin-bottom: 2.5rem;">
+          <div class="page-header__label">// whoami</div>
+          <h1 class="page-header__title">About Me</h1>
+        </div>
+
+        <div class="prose">
+          <p>
+            Hey, I'm <strong>Mohamed Eletrepy</strong>, known online as
+            <strong style="color: var(--accent-green); font-family: var(--font-mono)">maverick</strong>.
+            I'm a security researcher with a deep passion for red teaming, adversary simulation,
+            and understanding how attackers operate at a low level inside Windows environments.
+          </p>
+
+          <p>
+            My research sits at the intersection of offensive tradecraft and real-world threat
+            intelligence. I don't just run tools. I study <em>why</em> attacks work at the
+            protocol and OS level, and I document everything so the community can learn from it.
+          </p>
+
+          <h2>What I Focus On</h2>
+
+          <div class="focus-grid">
+            {[
+              {
+                label: 'Active Directory Attacks',
+                desc: 'Kerberoasting, AS-REP Roasting, DCSync, ACL abuse, ADCS exploitation, trust chain attacks, Shadow Credentials. The full kill chain from foothold to domain admin.',
+                color: 'green'
+              },
+              {
+                label: 'Adversary Simulation',
+                desc: 'Emulating real-world threat actors using MITRE ATT&CK TTPs. Building realistic scenarios that mirror advanced persistent threats to test enterprise defenses.',
+                color: 'purple'
+              },
+              {
+                label: 'Red Team Threat Intelligence',
+                desc: 'Tracking APT tradecraft, reverse-engineering attacker tooling, mapping observed TTPs to ATT&CK, and turning threat intel into actionable offensive scenarios.',
+                color: 'green'
+              },
+              {
+                label: 'Windows Internals & Low-Level',
+                desc: 'Process injection, token impersonation, LSASS access techniques, EDR evasion, PE internals, shellcode development, and kernel-adjacent offensive techniques.',
+                color: 'purple'
+              },
+              {
+                label: 'Network Security',
+                desc: 'Protocol-level attacks (NTLM relay, LDAP, SMB), network pivoting, C2 infrastructure design, traffic evasion, and offensive network tradecraft.',
+                color: 'green'
+              },
+              {
+                label: 'AI & Security',
+                desc: 'Researching LLM security, prompt injection, AI-assisted red teaming, and the emerging attack surface that AI systems introduce into enterprise environments.',
+                color: 'purple'
+              },
+              {
+                label: 'Web Pentesting',
+                desc: 'SQL injection, XSS, SSRF, authentication bypasses, JWT attacks, OAuth misconfigurations, API security testing, and logic flaws.',
+                color: 'green'
+              },
+            ].map(item => (
+              <div class={`focus-card focus-card--${item.color}`}>
+                <div class="focus-card__label">{item.label}</div>
+                <div class="focus-card__desc">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <h2>Philosophy</h2>
+          <p>
+            The most dangerous attackers are not the ones with the best tools. They are the ones
+            who understand the environment better than the defenders do. My goal is to close that
+            gap: by deeply studying attacker tradecraft and building the knowledge base that makes
+            defenders actually prepared.
+          </p>
+
+          <p>
+            I believe in going deep. Not just knowing that Kerberoasting works because of SPNs, but
+            understanding <em>why the Kerberos protocol makes this possible, what the ticket
+            structure looks like at the wire level, and exactly how detection engineering can catch it.</em>
+            That depth is what separates useful security research from noise.
+          </p>
+
+
+          <p>
+            I have a particular fascination with <strong>threat actors and their mindset</strong>.
+            I spend a lot of time studying how real APT groups operate — their tooling choices,
+            their OPSEC habits, their lateral movement patterns, why they pick certain targets,
+            and how they adapt when detected. Understanding the adversary at that level is what
+            makes the difference between a red team that just runs playbooks and one that actually
+            thinks like an attacker.
+          </p>
+
+          <blockquote>
+            "To know your enemy, you must become your enemy." — Sun Tzu
+          </blockquote>
+
+          <h2>My Setup</h2>
+
+          <div class="terminal">
+            <div class="terminal__header">
+              <div class="terminal__dot terminal__dot--red"></div>
+              <div class="terminal__dot terminal__dot--yellow"></div>
+              <div class="terminal__dot terminal__dot--green"></div>
+              <span class="terminal__title">bash — maverick@kali</span>
+            </div>
+            <div class="terminal__body" style="display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1.5rem;">
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">OS</span>
+              <span style="color: var(--text-secondary);">Kali Linux 2024.1 / Windows 11 Pro (Lab)</span>
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">AD Lab</span>
+              <span style="color: var(--text-secondary);">Windows Server 2019/2022 Domain, multiple workstations</span>
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">Tools</span>
+              <span style="color: var(--text-secondary);">Impacket, BloodHound, Cobalt Strike, BOFs, Sliver, Havoc</span>
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">Languages</span>
+              <span style="color: var(--text-secondary);">C, C#, Python, PowerShell, Assembly (x64)</span>
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">Intel</span>
+              <span style="color: var(--text-secondary);">MITRE ATT&CK, threat actor tracking, malware analysis</span>
+              <span style="color: var(--accent-green); font-weight: 600; white-space:nowrap">Editor</span>
+              <span style="color: var(--text-secondary);">Neovim + VS Code</span>
+            </div>
+          </div>
+
+          <h2>Courses & Training</h2>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">
+            Courses I have completed or am actively working through:
+          </p>
+
+          <div class="cert-grid">
+            {[
+              { name: 'CPTS', full: 'Certified Penetration Testing Specialist', org: 'Hack The Box', color: 'green' },
+              { name: 'CWEE', full: 'Certified Web Exploitation Expert', org: 'Hack The Box', color: 'purple' },
+              { name: 'OSCP', full: 'Offensive Security Certified Professional', org: 'Offensive Security', color: 'green' },
+              { name: 'CRTP', full: 'Certified Red Team Professional', org: 'Altered Security', color: 'purple' },
+              { name: 'CRTE', full: 'Certified Red Team Expert', org: 'Altered Security', color: 'green' },
+            ].map(cert => (
+              <div class="cert-card">
+                <span class={`cert-badge cert-badge--${cert.color}`}>{cert.name}</span>
+                <div class="cert-info">
+                  <span class="cert-full">{cert.full}</span>
+                  <span class="cert-org">{cert.org}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+
+          <h2>Resume / CV</h2>
+          <div class="cv-section">
+            <div class="cv-section__info">
+              <div class="cv-section__icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </div>
+              <div>
+                <div class="cv-section__title">Mohamed Eletrepy — CV</div>
+                <div class="cv-section__subtitle">Security Researcher · Red Teamer · Adversary Simulation</div>
+              </div>
+            </div>
+            {cvPath ? (
+            <a href={cvPath} target="_blank" rel="noopener" class="cv-download-btn" download>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download CV ({cvFilename})
+            </a>
+            ) : (
+            <span class="cv-download-btn" style="opacity:0.4;cursor:not-allowed">No CV uploaded yet</span>
+            )}
+          </div>
+
+
+          <h2>Contact</h2>
+          <p>
+            Want to talk red team research, share TTPs, or collaborate on something?
+            Find me on <a href="https://github.com/mohamedeletrepy" target="_blank" rel="noopener">GitHub</a> or
+            <a href="https://www.linkedin.com/in/0xmaverick/" target="_blank" rel="noopener">LinkedIn</a>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="about-sidebar">
+        <div class="profile-card">
+          <div class="profile-avatar" style="padding:0;overflow:hidden;background:var(--bg-elevated)">
+            {avatarPath
+              ? <img src={avatarPath} alt="Mohamed Eletrepy" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+              : <span style="font-family:var(--font-mono);font-size:1.8rem;font-weight:700;color:var(--accent-green);display:flex;align-items:center;justify-content:center;width:100%;height:100%">ME</span>
+            }
+          </div>
+          <div class="profile-name">Mohamed Eletrepy</div>
+          <div class="profile-role" style="margin-bottom:0.2rem">// maverick</div>
+          <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); margin-bottom:1.25rem;">Security Researcher</div>
+
+          <div class="skills-list">
+            {[
+              'Red Teaming', 'Adv. Simulation', 'Active Directory',
+              'Windows Internals', 'Threat Intel', 'Low-Level',
+              'Malware Dev', 'OPSEC', 'AI Security', 'C2 Dev'
+            ].map(skill => (
+              <span class="tag" style="font-size: 0.68rem;">{skill}</span>
+            ))}
+          </div>
+
+          <div class="profile-links">
+            <a href="https://github.com/mohamedeletrepy" target="_blank" rel="noopener noreferrer"
+               class="profile-link" aria-label="GitHub">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/0xmaverick/" target="_blank" rel="noopener noreferrer"
+               class="profile-link" aria-label="LinkedIn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </a>
+            <a href="/rss.xml" class="profile-link" aria-label="RSS">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-top:1rem;">
+          <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">Research Domains</div>
+          {[
+            { label: 'Active Directory', color: 'var(--accent-green)' },
+            { label: 'Windows Internals', color: 'var(--accent-green)' },
+            { label: 'Network Security', color: 'var(--accent-purple)' },
+            { label: 'Adversary Simulation', color: 'var(--accent-purple)' },
+            { label: 'Red Team Threat Intel', color: 'var(--accent-green)' },
+            { label: 'AI & Security', color: 'var(--accent-purple)' },
+            { label: 'Low-Level / Malware Dev', color: 'var(--accent-green)' },
+            { label: 'Web Security', color: 'var(--accent-purple)' },
+          ].map(d => (
+            <div style="display:flex; align-items:center; gap:0.6rem; padding:0.45rem 0; border-bottom:1px solid var(--border);">
+              <span style={`width:6px; height:6px; border-radius:50%; background:${d.color}; flex-shrink:0;`}></span>
+              <span style="font-size:0.82rem; color:var(--text-secondary); font-family:var(--font-mono);">{d.label}</span>
+            </div>
+          ))}
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.focus-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.25rem 0 2rem;
+}
+@media (max-width: 600px) { .focus-grid { grid-template-columns: 1fr; } }
+
+.focus-card {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+}
+.focus-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.focus-card--green::before { background: var(--accent-green); }
+.focus-card--purple::before { background: var(--accent-purple); }
+.focus-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.focus-card--green .focus-card__label { color: var(--accent-green); }
+.focus-card--purple .focus-card__label { color: var(--accent-purple); }
+.focus-card__desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.55; }
+
+.cert-grid { display: flex; flex-direction: column; gap: 0.6rem; margin: 0 0 1.5rem; }
+.cert-card {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+}
+.cert-badge {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  padding: 0.25rem 0.6rem; border-radius: 4px;
+  letter-spacing: 0.05em; min-width: 56px; text-align: center; flex-shrink: 0;
+}
+.cert-badge--green {
+  background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); color: var(--accent-green);
+}
+.cert-badge--purple {
+  background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); color: var(--accent-purple);
+}
+.cert-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.cert-full { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.3; }
+.cert-org { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+
+.cv-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 0.75rem 0;
+  flex-wrap: wrap;
+}
+
+.cv-section__info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cv-section__icon {
+  color: var(--accent-green);
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.cv-section__title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.cv-section__subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.cv-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #000;
+  background: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cv-download-btn:hover {
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+  text-shadow: none;
+  box-shadow: var(--glow-green);
+}
+
+</style>

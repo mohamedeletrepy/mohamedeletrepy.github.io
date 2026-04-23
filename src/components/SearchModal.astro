@@ -1,0 +1,132 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+const searchData = posts.map(post => ({
+  slug: post.slug,
+  title: post.data.title,
+  description: post.data.description,
+  tags: post.data.tags,
+  pubDate: post.data.pubDate.toISOString().split('T')[0],
+}));
+---
+
+<div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder="Search posts, tags, topics..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="search-close" aria-label="Close search"
+        style="background:none; border:none; cursor:pointer; color:var(--text-muted); font-family:var(--font-mono); font-size:0.75rem;">
+        esc
+      </button>
+    </div>
+
+    <div class="search-results" id="search-results">
+      <div class="search-empty" id="search-empty" style="display:none">
+        No results found.
+      </div>
+    </div>
+
+    <div class="search-footer">
+      <span class="search-hint"><kbd>↑↓</kbd> navigate</span>
+      <span class="search-hint"><kbd>↵</kbd> open</span>
+      <span class="search-hint"><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ searchData }}>
+  const overlay = document.getElementById('search-overlay');
+  const input = document.getElementById('search-input');
+  const resultsEl = document.getElementById('search-results');
+  const emptyEl = document.getElementById('search-empty');
+  const closeBtn = document.getElementById('search-close');
+
+  closeBtn?.addEventListener('click', () => overlay?.classList.remove('open'));
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+
+  function renderResults(query) {
+    const q = query.toLowerCase().trim();
+
+    // Clear previous results (keep empty message)
+    Array.from(resultsEl.querySelectorAll('.search-result-item')).forEach(el => el.remove());
+
+    if (!q) {
+      emptyEl.style.display = 'none';
+      return;
+    }
+
+    const matches = searchData.filter(post =>
+      post.title.toLowerCase().includes(q) ||
+      post.description.toLowerCase().includes(q) ||
+      post.tags.some(t => t.toLowerCase().includes(q))
+    );
+
+    if (matches.length === 0) {
+      emptyEl.style.display = 'block';
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+
+    matches.forEach(post => {
+      const item = document.createElement('a');
+      item.href = `/blog/${post.slug}`;
+      item.className = 'search-result-item';
+
+      const titleHighlighted = post.title.replace(
+        new RegExp(`(${q})`, 'gi'),
+        '<mark style="background: rgba(0,229,255,0.2); color: var(--accent-green)">$1</mark>'
+      );
+
+      item.innerHTML = `
+        <div class="search-result-item__title">${titleHighlighted}</div>
+        <div class="search-result-item__desc">${post.description.slice(0, 120)}...</div>
+        <div class="search-result-item__tags">
+          ${post.tags.slice(0, 3).map(t => `<span class="tag" style="font-size:0.65rem;">${t}</span>`).join('')}
+        </div>
+      `;
+
+      item.addEventListener('click', () => overlay?.classList.remove('open'));
+      resultsEl.insertBefore(item, emptyEl);
+    });
+  }
+
+  input?.addEventListener('input', (e) => {
+    renderResults(e.target.value);
+  });
+
+  // Keyboard navigation
+  let focusedIndex = -1;
+
+  input?.addEventListener('keydown', (e) => {
+    const items = Array.from(resultsEl.querySelectorAll('.search-result-item'));
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      focusedIndex = Math.min(focusedIndex + 1, items.length - 1);
+      items[focusedIndex]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      focusedIndex = Math.max(focusedIndex - 1, -1);
+      if (focusedIndex >= 0) items[focusedIndex]?.focus();
+      else input?.focus();
+    } else if (e.key === 'Enter' && focusedIndex >= 0) {
+      items[focusedIndex]?.click();
+    }
+  });
+</script>

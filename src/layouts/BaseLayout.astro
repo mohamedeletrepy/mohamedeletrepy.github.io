@@ -1,0 +1,118 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonicalURL?: string;
+}
+
+const {
+  title,
+  description = "Mohamed Eletrepy (maverick) — Security Researcher specializing in Red Teaming, Adversary Simulation, Active Directory attacks, and Windows internals.",
+  ogImage = "/og-default.png",
+  canonicalURL = Astro.url.href,
+} = Astro.props;
+
+const siteTitle = title === "Home"
+  ? "Mohamed Eletrepy | Security Researcher"
+  : `${title} | Mohamed Eletrepy`;
+
+// Dynamic favicon: find any favicon.* in /public
+const faviconFiles = import.meta.glob('/public/favicon.*', { eager: true, query: '?url', import: 'default' });
+const faviconPath = Object.keys(faviconFiles)[0]?.replace('/public', '') ?? '/favicon.svg';
+const faviconExt = faviconPath.split('.').pop() ?? 'svg';
+const faviconMime: Record<string, string> = {
+  svg: 'image/svg+xml', png: 'image/png',
+  jpg: 'image/jpeg', jpeg: 'image/jpeg',
+  ico: 'image/x-icon', webp: 'image/webp',
+};
+const faviconType = faviconMime[faviconExt] ?? 'image/png';
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Anti-flash: apply saved theme before render -->
+  <script is:inline>
+    (function(){
+      const t = localStorage.getItem('blog-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>{siteTitle}</title>
+  <meta name="title" content={siteTitle} />
+  <meta name="description" content={description} />
+  <meta name="author" content="Mohamed Eletrepy" />
+  <meta name="keywords" content="cybersecurity, red team, active directory, adversary simulation, web security, network security, AI security, threat intelligence" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={siteTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:site_name" content="Mohamed Eletrepy" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content={siteTitle} />
+  <meta property="twitter:description" content={description} />
+  <meta property="twitter:image" content={ogImage} />
+
+  <!-- Dynamic Favicon: drop any favicon.png/jpg/svg/ico in /public -->
+  <link rel="icon" type={faviconType} href={faviconPath} />
+  <link rel="apple-touch-icon" href={faviconPath} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="alternate" type="application/rss+xml" title="Mohamed Eletrepy Blog" href="/rss.xml" />
+  <meta name="theme-color" content="#080c0e" />
+  <meta name="robots" content="index, follow" />
+
+  <slot name="head" />
+</head>
+<body>
+  <Navbar />
+  <SearchModal />
+  <main><slot /></main>
+  <Footer />
+
+  <script>
+    // Mobile nav
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav  = document.getElementById('mobile-nav');
+    hamburger?.addEventListener('click', () => mobileNav?.classList.toggle('open'));
+    document.addEventListener('click', (e) => {
+      if (!hamburger?.contains(e.target as Node) && !mobileNav?.contains(e.target as Node))
+        mobileNav?.classList.remove('open');
+    });
+    // Active link
+    const path = window.location.pathname;
+    document.querySelectorAll('.navbar__nav a, .mobile-nav a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === path || (href !== '/' && path.startsWith(href ?? '')))
+        link.classList.add('active');
+    });
+    // Search
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('search-overlay')?.classList.toggle('open');
+        setTimeout(() => (document.getElementById('search-input') as HTMLInputElement)?.focus(), 50);
+      }
+      if (e.key === 'Escape') document.getElementById('search-overlay')?.classList.remove('open');
+    });
+  </script>
+</body>
+</html>

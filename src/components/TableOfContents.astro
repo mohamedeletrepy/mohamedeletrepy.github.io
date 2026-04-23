@@ -1,0 +1,47 @@
+---
+// TableOfContents — built client-side from headings
+---
+
+<nav class="toc" id="toc" aria-label="Table of contents">
+  <div class="toc__title">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="8" y1="6" x2="21" y2="6"/>
+      <line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/>
+      <line x1="3" y1="6" x2="3.01" y2="6"/>
+      <line x1="3" y1="12" x2="3.01" y2="12"/>
+      <line x1="3" y1="18" x2="3.01" y2="18"/>
+    </svg>
+    on this page
+  </div>
+  <nav class="toc__nav" id="toc-nav"></nav>
+</nav>
+
+<script>
+  // Build TOC from headings
+  const proseEl = document.getElementById('prose-content');
+  const tocNav = document.getElementById('toc-nav');
+
+  if (proseEl && tocNav) {
+    const headings = proseEl.querySelectorAll('h2, h3');
+
+    headings.forEach((heading, i) => {
+      // Generate ID if missing
+      if (!heading.id) {
+        heading.id = heading.textContent?.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '') ?? `heading-${i}`;
+      }
+
+      const link = document.createElement('a');
+      link.href = `#${heading.id}`;
+      link.className = `toc__link${heading.tagName === 'H3' ? ' toc__link--h3' : ''}`;
+      link.textContent = heading.textContent?.replace(/^#{1,3}\s/, '') ?? '';
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById(heading.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      tocNav.appendChild(link);
+    });
+  }
+</script>

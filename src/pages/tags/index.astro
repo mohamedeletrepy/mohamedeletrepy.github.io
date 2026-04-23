@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+// Build tag map with count
+const tagMap = new Map<string, number>();
+allPosts.forEach(post => {
+  post.data.tags.forEach(tag => {
+    tagMap.set(tag, (tagMap.get(tag) ?? 0) + 1);
+  });
+});
+
+const tags = [...tagMap.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag, count]) => ({ tag, count, slug: tag.toLowerCase().replace(/\s+/g, '-') }));
+---
+
+<BaseLayout title="Tags" description="Browse posts by topic and tag.">
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header__label">// browse by topic</div>
+      <h1 class="page-header__title">All Tags</h1>
+      <p class="page-header__desc">{tags.length} topics across {allPosts.length} posts.</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 5rem;">
+      {tags.map(({ tag, count, slug }) => (
+        <a
+          href={`/tags/${slug}`}
+          style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; text-decoration: none; transition: all 0.2s;"
+          onmouseover="this.style.borderColor='var(--accent-green)'; this.style.background='var(--bg-card-hover)'"
+          onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--bg-card)'"
+        >
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary);">{tag}</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-green); background: rgba(0,229,255,0.1); border-radius: 10px; padding: 0.1rem 0.45rem;">{count}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
