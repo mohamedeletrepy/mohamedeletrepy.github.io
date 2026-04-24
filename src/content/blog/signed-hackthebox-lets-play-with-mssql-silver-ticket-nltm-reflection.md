@@ -833,15 +833,6 @@ Now it’s time for exploitation. I will create a DNS record you can use tools l
 ![](https://cdn-images-1.medium.com/max/1200/1*BqyCtJ9hQcvB0infreCpCQ.png)
 
 *Using BloodyAd*
-
----
-
-**Ready to level up your hacking skills?**
-
-**Join **[**Hack The Box**](https://hacktheboxltd.sjv.io/19ZM06)** — the ultimate platform to learn penetration testing and cybersecurity hands-on.**
-
-**👉 Start hacking **[**here**](https://hacktheboxltd.sjv.io/19ZM06)** and get access to real-world labs, challenges, and career-boosting skills.**
-
 ---
 
 **(1) Added DnsRecord**
