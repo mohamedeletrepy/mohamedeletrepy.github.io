@@ -140,7 +140,7 @@ title: "My Post Title"
 description: "A short description for SEO and previews."
 pubDate: 2024-05-01
 tags: ["Active Directory", "Red Team", "Windows"]
-author: "Ahmed Eletreby"
+author: "Mohamed Eletreby"
 readingTime: 8
 ---
 
@@ -157,7 +157,7 @@ Then push — the site rebuilds automatically.
 | `description` | ✅ | SEO description (150 chars max) |
 | `pubDate` | ✅ | Publication date `YYYY-MM-DD` |
 | `tags` | ✅ | Array of tags |
-| `author` | ❌ | Defaults to "Ahmed Eletreby" |
+| `author` | ✅ | Defaults to "Mohamed Eletreby" |
 | `readingTime` | ❌ | Estimated minutes to read |
 | `draft` | ❌ | Set to `true` to hide from build |
 | `updatedDate` | ❌ | Last updated date |
@@ -253,4 +253,4 @@ In `src/styles/global.css`, update:
 
 ---
 
-*Built by Ahmed Eletreby — break things legally.*
+*Built by Mohamed Eletreby — break things legally.*
